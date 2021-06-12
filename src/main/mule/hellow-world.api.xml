@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d14be3c7-3e85-46e2-811c-8ea9da350f17" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="hellow-world.apiFlow" doc:id="e81385f0-43e8-489d-9de8-8e138302013e" >
+		<http:listener doc:name="Listener" doc:id="64f5ac52-a87a-4cfd-a5d9-ec1db24c5230" config-ref="HTTP_Listener_config" path="/sample/{name}"/>
+		<logger level="INFO" doc:name="Logger" doc:id="873ec4a2-3c99-49c6-88ba-6432b45838d9" message="Message&gt;&gt;&gt;&gt;#[message]  and  payload&gt;&gt;&gt;#[payload]  "/>
+		<set-variable value="#[attributes.uriParams.name]" doc:name="Set Variable" doc:id="e3df41e4-7f6e-4675-9722-df3cc462b5bf" variableName="requesterName"/>
+		<logger level="INFO" doc:name="Logger" doc:id="f5e3c79a-38c0-42ee-88b4-f9d5958181b2" message="requesterName&gt;&gt;&gt;#[vars.requesterName]"/>
+		<ee:transform doc:name="Transform Message" doc:id="c3cbd566-8b03-4895-a0fd-e4fbd56a5f3d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"Hellow " ++ (attributes.uriParams.name default "")]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="65f3c968-77fa-4fa2-8260-0b254d8549bb" message="final response &gt;&gt;&gt;#[payload]"/>
+	</flow>
+</mule>
